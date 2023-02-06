@@ -6,6 +6,7 @@ Settings settings = Settings();
 WiFiManager wifi = WiFiManager(&logger, &settings.getSettings()->network);
 SystemCheck systemCheck = SystemCheck(&logger);
 WebServer webServer = WebServer(&logger, &settings.getSettings()->network);
+// RS485 rs485 = RS485(&logger);
 
 void setup()
 { 
