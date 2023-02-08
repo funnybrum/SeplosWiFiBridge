@@ -1,4 +1,4 @@
-#include "RS485.h"
+#include "Main.h"
 
 RS485::RS485(Logger* logger, uint8_t dePin) {
     _logger = logger;
@@ -38,10 +38,8 @@ void RS485::loop() {
 }
 
 void RS485::processCmdBuffer() {
-    logBuffer();
-    if (_cmdBuffer[0] != 0x7E || _cmdBuffer[_cmdBufferPos-1] != 0x0D || ) {
-        // TODO
-    }
+    battery.processFrame(_cmdBuffer, _cmdBufferPos);
+    
 }
 
 void RS485::sendCommand(uint8_t* cmd, uint8_t size) {

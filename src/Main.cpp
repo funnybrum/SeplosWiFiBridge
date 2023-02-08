@@ -6,6 +6,7 @@ Settings settings = Settings();
 WiFiManager wifi = WiFiManager(&logger, &settings.getSettings()->network);
 WebServer webServer = WebServer(&logger, &settings.getSettings()->network);
 RS485 rs485 = RS485(&logger);
+Battery battery = Battery();
 
 void setup()
 {
@@ -14,6 +15,7 @@ void setup()
     webServer.begin();
 
     wifi.connect();
+    battery.begin();
     rs485.begin();
     pinMode(LED_BUILTIN, OUTPUT);
 }
@@ -24,6 +26,7 @@ void loop() {
     wifi.loop();
     webServer.loop();
     settings.loop();
+    battery.loop();
     rs485.loop();
 
     if (wifi.isInAPMode()) {

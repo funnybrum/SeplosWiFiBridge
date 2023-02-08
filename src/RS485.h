@@ -25,7 +25,7 @@ class RS485 {
         uint16_t _postDelay;
         bool _transmitting = false;
         
-        char _cmdBuffer[256];
+        uint8_t _cmdBuffer[256];
         uint16_t _cmdBufferPos;
 
         uint32_t lastCharReceived = 0;

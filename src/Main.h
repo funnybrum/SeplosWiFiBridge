@@ -19,3 +19,4 @@ extern Logger logger;
 extern Settings settings;
 extern WiFiManager wifi;
 extern RS485 rs485;
+extern Battery battery;
