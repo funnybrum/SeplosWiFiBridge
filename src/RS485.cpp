@@ -7,15 +7,18 @@ RS485::RS485(Logger* logger, uint8_t dePin) {
 }
 
 void RS485::begin(uint32_t baudRate, SerialConfig mode) {
-    Serial.begin(baudRate, mode);
+    Serial.begin(baudRate);
     pinMode(_dePin, OUTPUT);
     digitalWrite(_dePin, LOW);
     _transmitting = false;
     _logger->log("RS485 initialized");
 }
 
+char buf[100];
+
 void RS485::loop() {
     while (Serial.available() > 0) {
+        digitalWrite(LED_BUILTIN, LOW);
         char nextChar = Serial.read();
         lastCharReceived = millis();
 
@@ -26,6 +29,7 @@ void RS485::loop() {
             _cmdBuffer[sizeof(_cmdBuffer)-1] = 0;
         }
     }
+    digitalWrite(LED_BUILTIN, HIGH);
 
     if (_cmdBufferPos > 0 && millis() - lastCharReceived > TIMEOUT_MILLIS) {
         processCmdBuffer();
@@ -35,42 +39,36 @@ void RS485::loop() {
 
 void RS485::processCmdBuffer() {
     logBuffer();
-    if (_cmdBuffer[0] != 0x7E || _cmdBuffer[_cmdBufferPos-1] != 0x0D) {
+    if (_cmdBuffer[0] != 0x7E || _cmdBuffer[_cmdBufferPos-1] != 0x0D || ) {
         // TODO
     }
 }
 
-void RS485::logBuffer() {
-    String result = "[";
-    char buf[5];
-    for (int p = 0; p < _cmdBufferPos; p++) {
-        sprintf(buf, "%02X", _cmdBuffer[p]);
-        result += buf;
-        if (p < _cmdBufferPos - 1) {
-            result += ", ";
-        }
-    }
-    result += "]";
-    _logger->log(result.c_str());
-}
-
-void RS485::sendCommand(char* destination, char* cmd) {
+void RS485::sendCommand(uint8_t* cmd, uint8_t size) {
     loop();
     beginTransmission();
-    // TODO, legacy from the RS485 server
-    Serial.printf("%s:%s", destination, cmd);
+    unsigned long start = micros();
+    for (unsigned int i = 0; i < size; i++) {
+        Serial.write(cmd[i]);
+    }
+    unsigned long duration = micros() - start;
+    delayMicroseconds((size * 521) - duration + 200);
+    duration = micros() - start;
     endTransmission();
+    char buf[100];
+    memcpy(buf, cmd, size);
+    buf[size-1] = 0;
+    _logger->log("Send: %s in %luns", buf, duration);
 } 
 
 void RS485::beginTransmission() {
     digitalWrite(_dePin, HIGH);
-    delayMicroseconds(_preDelay);
+    delay(10);
     _transmitting = true;
 }
 
 void RS485::endTransmission() {
-    Serial.flush();
-    delayMicroseconds(_postDelay);
+    // delayMicroseconds(_postDelay);
     digitalWrite(_dePin, LOW);
     _transmitting = false;
 }

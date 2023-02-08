@@ -2,7 +2,7 @@
 
 #include "Logger.h"
 
-#define TIMEOUT_MILLIS 250
+#define TIMEOUT_MILLIS 25
 
 class RS485 {
     public:
@@ -10,9 +10,8 @@ class RS485 {
         void begin(uint32_t baudRate = 19200, SerialConfig mode = SERIAL_8N1);
         void loop();
         void processCmdBuffer();
-        void logBuffer();
 
-        void sendCommand(char* destination, char* cmd);
+        void sendCommand(uint8_t* cmd, uint8_t size);
 
     protected:
         void beginTransmission();

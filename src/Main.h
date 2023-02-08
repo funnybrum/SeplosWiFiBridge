@@ -10,6 +10,7 @@
 #include "esp8266-base.h"
 
 #include "RS485.h"
+#include "Battery.h"
 
 #define HTTP_PORT 80
 #define HOSTNAME "seplos"
@@ -17,4 +18,4 @@
 extern Logger logger;
 extern Settings settings;
 extern WiFiManager wifi;
-extern SystemCheck systemCheck;
+extern RS485 rs485;
