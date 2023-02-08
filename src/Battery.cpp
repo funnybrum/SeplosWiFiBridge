@@ -26,7 +26,7 @@ void Battery::processFrame(uint8_t* frame, uint16_t size) {
     voltage = to2pDecimal(result, 48);
     soc = to1pDecimal(result, 55);
 
-    // remainingCapacity = to2pDecimal(result, 50);
+    remainingCapacity = to2pDecimal(result, 50);
     // externalVoltage = to2pDecimal(result, 63);
 }
 
@@ -62,11 +62,16 @@ float Battery::getSOC() {
     return soc;
 }
 
+float Battery::getRemainingCapacity() {
+    return remainingCapacity;
+}
+
 void Battery::logFrame(uint8_t* frame, uint16_t size, uint8_t code) {
     String result = "";
 
     char buf[16];
     sprintf(buf, "[err=%d]:[", code);
+    result += buf;
 
     for (int i = 0; i < size; i++) {
         sprintf(buf, "%02X", frame[i]);

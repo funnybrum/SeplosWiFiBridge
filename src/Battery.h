@@ -16,6 +16,7 @@ class Battery {
         float getVoltage();
         float getPower();
         float getSOC();
+        float getRemainingCapacity();
 
     protected:
         void logFrame(uint8_t* frame, uint16_t size, uint8_t code);
@@ -34,5 +35,6 @@ class Battery {
         float current;
         float voltage;
         float soc;
+        float remainingCapacity;
         uint32_t lastDataRequest;
 };

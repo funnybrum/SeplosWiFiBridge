@@ -1,9 +1,11 @@
 #include "Main.h"
 
-RS485::RS485(Logger* logger, uint8_t dePin) {
+RS485::RS485(Logger* logger, uint8_t dePin, uint16_t preDelay, uint16_t postDelay) {
     _logger = logger;
     _dePin = dePin;
     _cmdBufferPos = 0;
+    _preDelay = preDelay;
+    _postDelay = postDelay;
 }
 
 void RS485::begin(uint32_t baudRate, SerialConfig mode) {
@@ -13,8 +15,6 @@ void RS485::begin(uint32_t baudRate, SerialConfig mode) {
     _transmitting = false;
     _logger->log("RS485 initialized");
 }
-
-char buf[100];
 
 void RS485::loop() {
     while (Serial.available() > 0) {
@@ -50,13 +50,10 @@ void RS485::sendCommand(uint8_t* cmd, uint8_t size) {
         Serial.write(cmd[i]);
     }
     unsigned long duration = micros() - start;
-    delayMicroseconds((size * 521) - duration + 200);
-    duration = micros() - start;
+    // Serial.flush() does not work. Delay until all data is flushed.
+    // 521ns is the required time to push 1 byte with SERIAL_8N1.
+    delayMicroseconds((size * 521) - duration);
     endTransmission();
-    char buf[100];
-    memcpy(buf, cmd, size);
-    buf[size-1] = 0;
-    _logger->log("Send: %s in %luns", buf, duration);
 } 
 
 void RS485::beginTransmission() {
@@ -66,7 +63,7 @@ void RS485::beginTransmission() {
 }
 
 void RS485::endTransmission() {
-    // delayMicroseconds(_postDelay);
+    delayMicroseconds(_postDelay);
     digitalWrite(_dePin, LOW);
     _transmitting = false;
 }

@@ -6,7 +6,7 @@
 
 class RS485 {
     public:
-        RS485(Logger* logger, uint8_t dePin = D1);
+        RS485(Logger* logger, uint8_t dePin = D1, uint16_t preDelay = 0, uint16_t postDelay = 200);
         void begin(uint32_t baudRate = 19200, SerialConfig mode = SERIAL_8N1);
         void loop();
         void processCmdBuffer();

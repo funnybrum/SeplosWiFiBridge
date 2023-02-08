@@ -9,6 +9,7 @@
 
 #include "esp8266-base.h"
 
+#include "DataCollector.h"
 #include "RS485.h"
 #include "Battery.h"
 
@@ -20,3 +21,4 @@ extern Settings settings;
 extern WiFiManager wifi;
 extern RS485 rs485;
 extern Battery battery;
+extern DataCollector dataCollector;

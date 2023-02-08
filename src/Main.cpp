@@ -5,16 +5,20 @@ Settings settings = Settings();
 
 WiFiManager wifi = WiFiManager(&logger, &settings.getSettings()->network);
 WebServer webServer = WebServer(&logger, &settings.getSettings()->network);
+DataCollector dataCollector = DataCollector();
 RS485 rs485 = RS485(&logger);
 Battery battery = Battery();
 
 void setup()
 {
+    Serial.begin(19200);
+    delay(100);
     settings.begin();
     wifi.begin();
     webServer.begin();
 
     wifi.connect();
+    dataCollector.begin();
     battery.begin();
     rs485.begin();
     pinMode(LED_BUILTIN, OUTPUT);
@@ -26,6 +30,7 @@ void loop() {
     wifi.loop();
     webServer.loop();
     settings.loop();
+    dataCollector.loop();
     battery.loop();
     rs485.loop();
 
