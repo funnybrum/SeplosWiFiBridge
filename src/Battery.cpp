@@ -8,7 +8,11 @@ void Battery::processFrame(uint8_t* frame, uint16_t size) {
 
     if (!extractionResult) {
         logFrame(frame, size, 0);
+        return;
     }
+
+    maxFrameDelay = max(maxFrameDelay, (uint32)(millis() - lastReceivedFrame));
+    lastReceivedFrame = millis();
 
     // uint8_t cellCount = result[0];
     for (int i = 0; i < 16; i++) {
@@ -24,10 +28,21 @@ void Battery::processFrame(uint8_t* frame, uint16_t size) {
     bmsTemp = toTemp(result, 42);
     current = to2pDecimal(result, 46);
     voltage = to2pDecimal(result, 48);
+    portVoltage = to2pDecimal(result, 63);
     soc = to1pDecimal(result, 55);
 
     remainingCapacity = to2pDecimal(result, 50);
-    // externalVoltage = to2pDecimal(result, 63);
+
+    maxBatteryVoltage = max(maxBatteryVoltage, voltage);
+    maxPortVoltage = max(maxPortVoltage, portVoltage);
+    float maxCell = 0; float minCell = 100;
+    for (int i = 0; i < 16; i++) {
+        maxCell = max(maxCell, cellVoltage[i]);
+        minCell = min(minCell, cellVoltage[i]);
+    }
+    maxCellVoltage = max(maxCellVoltage, maxCell);
+    minCellVoltage = min(minCellVoltage, minCell);
+    maxCellDiffVoltage = max(maxCellDiffVoltage, maxCell - minCell);
 }
 
 float Battery::getCellVoltage(uint8_t index) {
@@ -52,6 +67,10 @@ float Battery::getCurrent() {
 
 float Battery::getVoltage() {
     return voltage;
+}
+
+float Battery::getPortVoltage() {
+    return portVoltage;
 }
 
 float Battery::getPower() {
@@ -130,16 +149,55 @@ float Battery::toTemp(uint8_t data[], uint8_t pos) {
 
 void Battery::begin() {
     lastDataRequest = 0;
+    resetMaxValues();
 }
 
 void Battery::loop() {
-    if (millis() - lastDataRequest > 10000) {
+    uint32_t cur_millis = millis();
+    if (cur_millis - lastDataRequest > 1000) {
         uint8_t cmd[20] = {
             0x7E, 0x32, 0x30, 0x30, 0x30, 
             0x34, 0x36, 0x34, 0x32, 0x45, 
             0x30, 0x30, 0x32, 0x30, 0x30, 
             0x46, 0x44, 0x33, 0x37, 0x0D};
         rs485.sendCommand(cmd, 20);
-        lastDataRequest = millis();
+        if (cur_millis - lastDataRequest < 1500) {
+            lastDataRequest += 1000;
+        } else {
+            lastDataRequest = cur_millis;
+        }
     }
+}
+
+void Battery::resetMaxValues() {
+    this->maxBatteryVoltage = 0;
+    this->maxPortVoltage = 0;
+    this->maxCellVoltage = 0;
+    this->maxFrameDelay = 0;
+    this->minCellVoltage = 100;
+    this->maxCellDiffVoltage = 0;
+}
+
+float Battery::getMaxBatteryVoltage() {
+    return this->maxBatteryVoltage;
+}
+
+float Battery::getMaxPortVoltage() {
+    return this->maxPortVoltage;
+}
+
+float Battery::getMaxCellVoltage() {
+    return this->maxCellVoltage;
+}
+
+float Battery::getMinCellVoltage() {
+    return this->minCellVoltage;
+}
+
+float Battery::getMaxCellDiffVoltage() {
+    return this->maxCellDiffVoltage;
+}
+
+uint32_t Battery::getMaxFrameDelay() {
+    return this->maxFrameDelay;
 }

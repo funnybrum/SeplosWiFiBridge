@@ -8,6 +8,7 @@ WebServer webServer = WebServer(&logger, &settings.getSettings()->network);
 DataCollector dataCollector = DataCollector();
 RS485 rs485 = RS485(&logger);
 Battery battery = Battery();
+Heating heating = Heating();
 
 void setup()
 {
@@ -21,7 +22,21 @@ void setup()
     dataCollector.begin();
     battery.begin();
     rs485.begin();
+    heating.begin();
+
     pinMode(LED_BUILTIN, OUTPUT);
+
+    // balancing out
+    pinMode(D5, OUTPUT);
+    digitalWrite(D5, LOW);
+
+    // 48v out 1
+    pinMode(D6, OUTPUT);
+    digitalWrite(D6, LOW);
+
+    // 48v out 2
+    pinMode(D7, OUTPUT);
+    digitalWrite(D7, LOW);
 }
 
 int i = 0;
@@ -33,6 +48,7 @@ void loop() {
     dataCollector.loop();
     battery.loop();
     rs485.loop();
+    heating.loop();
 
     if (wifi.isInAPMode()) {
         if (millis() > 15 * 1000) {

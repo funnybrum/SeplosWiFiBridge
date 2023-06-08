@@ -13,6 +13,10 @@ class WebServer: public WebServerBase {
         void handle_settings();
         void handle_reset();
         void handle_blink();
-        void handle_nl0();
-        void handle_nl1();
+        void handle_heat_on();
+        void handle_heat_off();
+        void handle_cool_on();
+        void handle_cool_off();
+        void handle_balance_on();
+        void handle_balance_off();
 };

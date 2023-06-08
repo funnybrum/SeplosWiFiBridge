@@ -36,9 +36,16 @@ void DataCollector::collectData() {
     append("battery.temp.cell_sensor4", battery.getCellTemp(3), 1);
     append("battery.temp.env", battery.getEnvTemp(), 1);
     append("battery.temp.bms", battery.getBMSTemp(), 1);
-    append("battery.energy.power", battery.getPower(), 0);
     append("battery.energy.soc", battery.getSOC(), 1);
-    append("battery.energy.remaining_ah", battery.getRemainingCapacity(), 2);
+    append("battery.current", battery.getCurrent(), 2);
+
+    append("battery.voltage.port_max", battery.getMaxPortVoltage(), 2);
+    append("battery.voltage.max", battery.getMaxBatteryVoltage(), 2);
+    append("battery.voltage.cell_min", battery.getMinCellVoltage(), 3);
+    append("battery.voltage.cell_max", battery.getMaxCellVoltage(), 3);
+    append("battery.voltage.cell_diff", battery.getMaxCellDiffVoltage(), 3);
+    append("battery.comm.max_frame_delay", battery.getMaxFrameDelay(), 0);
+    battery.resetMaxValues();
 }
 
 bool DataCollector::shouldPush() {

@@ -14,9 +14,19 @@ class Battery {
         float getBMSTemp();
         float getCurrent();
         float getVoltage();
+        float getPortVoltage();
         float getPower();
         float getSOC();
         float getRemainingCapacity();
+
+        void resetMaxValues();
+
+        float getMaxCellVoltage();
+        float getMinCellVoltage();
+        float getMaxBatteryVoltage();
+        float getMaxPortVoltage();
+        float getMaxCellDiffVoltage();
+        uint32_t getMaxFrameDelay();
 
     protected:
         void logFrame(uint8_t* frame, uint16_t size, uint8_t code);
@@ -34,7 +44,15 @@ class Battery {
         float envTemp;
         float current;
         float voltage;
+        float portVoltage;
         float soc;
         float remainingCapacity;
+        float maxCellVoltage;
+        float maxBatteryVoltage;
+        float maxPortVoltage;
+        float minCellVoltage;
+        float maxCellDiffVoltage;
+        uint32_t maxFrameDelay;
         uint32_t lastDataRequest;
+        uint32_t lastReceivedFrame;
 };

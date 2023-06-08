@@ -17,11 +17,9 @@ const char CONFIG_PAGE[] PROGMEM = R"=====(
  </BODY>
 </HTML>
 )=====";
-
-const char GET_JSON[] PROGMEM = R"=====({
- "voltage":%.2f,
- "current":%.2f,
+/*
  "power":%.0f,
+ ...
  "cell1_v": %.3f,
  "cell2_v": %.3f,
  "cell3_v": %.3f,
@@ -38,12 +36,15 @@ const char GET_JSON[] PROGMEM = R"=====({
  "cell14_v": %.3f,
  "cell15_v": %.3f,
  "cell16_v": %.3f,
- "temp1": %.1f,
- "temp2": %.1f,
- "temp3": %.1f,
- "temp4": %.1f,
- "env_temp": %1.f,
- "bms_temp": %1.f,
+*/
+const char GET_JSON[] PROGMEM = R"=====({
+ "voltage":%.2f,
+ "port_voltage": %.2f,
+ "current":%.2f,
+ "cell_max": %.3f,
+ "cell_min": %.3f,
  "soc": %.1f,
+ "heating": %d,
+ "comm_max_frame_delay": %d,
  "rssi":%d
 })=====";
