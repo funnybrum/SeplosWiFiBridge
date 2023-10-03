@@ -9,6 +9,7 @@ DataCollector dataCollector = DataCollector();
 RS485 rs485 = RS485(&logger);
 Battery battery = Battery();
 Heating heating = Heating();
+Balancer balancer = Balancer();
 
 void setup()
 {
@@ -23,6 +24,7 @@ void setup()
     battery.begin();
     rs485.begin();
     heating.begin();
+    balancer.begin();
 
     pinMode(LED_BUILTIN, OUTPUT);
 
@@ -49,6 +51,7 @@ void loop() {
     battery.loop();
     rs485.loop();
     heating.loop();
+    balancer.loop();
 
     if (wifi.isInAPMode()) {
         if (millis() > 15 * 1000) {

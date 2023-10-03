@@ -14,8 +14,9 @@ void WebServer::registerHandlers() {
     server->on("/heating/off", std::bind(&WebServer::handle_heat_off, this));
     server->on("/cooling/on", std::bind(&WebServer::handle_cool_on, this));
     server->on("/cooling/off", std::bind(&WebServer::handle_cool_off, this));
-    server->on("/balancing/on", std::bind(&WebServer::handle_balance_on, this));
-    server->on("/balacning/off", std::bind(&WebServer::handle_balance_off, this));
+    server->on("/balancer/on", std::bind(&WebServer::handle_balance_on, this));
+    server->on("/balancer/off", std::bind(&WebServer::handle_balance_off, this));
+    server->on("/balancer/auto", std::bind(&WebServer::handle_balance_auto, this));
 }
 
 void WebServer::handle_root() {
@@ -43,12 +44,38 @@ void WebServer::handle_cool_off() {
     server->send(200);
 }
 void WebServer::handle_balance_on() {
-    digitalWrite(D5, HIGH);
+    balancer.setMode(ON);
     server->send(200);
 }
 
 void WebServer::handle_balance_off() {
-    digitalWrite(D5, LOW);
+    balancer.setMode(OFF);
+    server->send(200);
+}
+
+void WebServer::handle_balance_auto() {
+    int thresholdVoltage = -1;
+    int thresholdVoltageDifference = -1;
+
+    if (server->arg("threshold") != "") {
+        thresholdVoltage = atoi(server->arg("threshold").c_str());
+        if (thresholdVoltage > 3650 || thresholdVoltage < 3300) {
+            server->send(400, "Threshold voltage should be between 3300mV and 3650mV");
+            return;
+        }
+        balancer.setThresholdVoltage(thresholdVoltage);
+    }
+
+    if (server->arg("diff") != "") {
+        thresholdVoltageDifference = atoi(server->arg("diff").c_str());
+        if (thresholdVoltageDifference > 50 || thresholdVoltageDifference < 0) {
+            server->send(400, "Threshold voltage difference should be between 0mV and 50mV");
+            return;
+        }
+        balancer.setVoltageDifference(thresholdVoltageDifference);
+    }
+
+    balancer.setMode(AUTO);
     server->send(200);
 }
 
@@ -92,6 +119,7 @@ void WebServer::handle_get() {
               battery.getSOC(),
               heating.isHeating(),
               battery.getMaxFrameDelay(),
+              balancer.isBalancing(),
               WiFi.RSSI());
     server->send(200, "application/json", buffer);
 }

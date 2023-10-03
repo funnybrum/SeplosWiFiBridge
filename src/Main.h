@@ -13,6 +13,7 @@
 #include "RS485.h"
 #include "Battery.h"
 #include "Heating.h"
+#include "Balancer.h"
 
 #define HTTP_PORT 80
 #define HOSTNAME "seplos"
@@ -24,3 +25,4 @@ extern RS485 rs485;
 extern Battery battery;
 extern DataCollector dataCollector;
 extern Heating heating;
+extern Balancer balancer;

@@ -19,4 +19,5 @@ class WebServer: public WebServerBase {
         void handle_cool_off();
         void handle_balance_on();
         void handle_balance_off();
+        void handle_balance_auto();
 };

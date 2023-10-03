@@ -36,13 +36,26 @@ void Battery::processFrame(uint8_t* frame, uint16_t size) {
     maxBatteryVoltage = max(maxBatteryVoltage, voltage);
     maxPortVoltage = max(maxPortVoltage, portVoltage);
     float maxCell = 0; float minCell = 100;
+    int minCellIndex = 0, maxCellIndex = 0;
     for (int i = 0; i < 16; i++) {
+        if (cellVoltage[i] > maxCell) {
+            maxCell = cellVoltage[i];
+            maxCellIndex = i;
+        }
+
+        if (cellVoltage[i] < minCell) {
+            minCell = cellVoltage[i];
+            minCellIndex = i;
+        }
         maxCell = max(maxCell, cellVoltage[i]);
         minCell = min(minCell, cellVoltage[i]);
     }
     maxCellVoltage = max(maxCellVoltage, maxCell);
     minCellVoltage = min(minCellVoltage, minCell);
     maxCellDiffVoltage = max(maxCellDiffVoltage, maxCell - minCell);
+    if (maxCell - minCell > 0.05) {
+        logger.log("[%d] Cell %d volage is %.3f, cell %d volage is %.3f", (long)millis()/1000, minCellIndex+1, minCell,maxCellIndex+1, maxCell);
+    }
 }
 
 float Battery::getCellVoltage(uint8_t index) {

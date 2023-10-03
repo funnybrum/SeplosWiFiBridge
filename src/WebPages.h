@@ -46,5 +46,6 @@ const char GET_JSON[] PROGMEM = R"=====({
  "soc": %.1f,
  "heating": %d,
  "comm_max_frame_delay": %d,
+ "balancer": %d,
  "rssi":%d
 })=====";

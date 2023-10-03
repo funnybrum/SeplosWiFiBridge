@@ -45,6 +45,7 @@ void DataCollector::collectData() {
     append("battery.voltage.cell_max", battery.getMaxCellVoltage(), 3);
     append("battery.voltage.cell_diff", battery.getMaxCellDiffVoltage(), 3);
     append("battery.comm.max_frame_delay", battery.getMaxFrameDelay(), 0);
+    append("battery.active_balancer", balancer.isBalancing()?1:0, 0);
     battery.resetMaxValues();
 }
 
