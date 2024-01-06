@@ -15,6 +15,7 @@ class Balancer {
         void setMode(BalancerMode mode);
         void setThresholdVoltage(int mV);
         void setVoltageDifference(int mV);
+        void setThresholdCurrent(int a);
         bool isBalancing();
 
     private:
@@ -22,4 +23,5 @@ class Balancer {
         bool isOn;
         int thresholdVoltage;
         int thresholdVoltageDiff;
+        int thresholdCurrent;
 };

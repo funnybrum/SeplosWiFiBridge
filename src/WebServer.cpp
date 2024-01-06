@@ -54,11 +54,8 @@ void WebServer::handle_balance_off() {
 }
 
 void WebServer::handle_balance_auto() {
-    int thresholdVoltage = -1;
-    int thresholdVoltageDifference = -1;
-
-    if (server->arg("threshold") != "") {
-        thresholdVoltage = atoi(server->arg("threshold").c_str());
+    if (server->arg("threshold_voltage") != "") {
+        int thresholdVoltage = atoi(server->arg("threshold_voltage").c_str());
         if (thresholdVoltage > 3650 || thresholdVoltage < 3300) {
             server->send(400, "Threshold voltage should be between 3300mV and 3650mV");
             return;
@@ -66,8 +63,17 @@ void WebServer::handle_balance_auto() {
         balancer.setThresholdVoltage(thresholdVoltage);
     }
 
-    if (server->arg("diff") != "") {
-        thresholdVoltageDifference = atoi(server->arg("diff").c_str());
+    if (server->arg("threshold_current") != "") {
+        int thresholdCurrent = atoi(server->arg("threshold_current").c_str());
+        if (thresholdCurrent > 100 || thresholdCurrent < 0) {
+            server->send(400, "Threshold current should be between 0A and 100A");
+            return;
+        }
+        balancer.setThresholdCurrent(thresholdCurrent);
+    }
+
+    if (server->arg("voltage_diff") != "") {
+        int thresholdVoltageDifference = atoi(server->arg("voltage_diff").c_str());
         if (thresholdVoltageDifference > 50 || thresholdVoltageDifference < 0) {
             server->send(400, "Threshold voltage difference should be between 0mV and 50mV");
             return;

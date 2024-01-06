@@ -45,6 +45,24 @@ int i = 0;
 
 void loop() {
     wifi.loop();
+
+    if (wifi.isInAPMode()) {
+        if (millis() > 120 * 1000) {
+            ESP.reset();
+        }
+        digitalWrite(LED_BUILTIN, LOW);
+    } else if (wifi.isConnected()) {
+        digitalWrite(LED_BUILTIN, i%10);
+    } else {
+        if (millis() > 120 * 1000) {
+            ESP.reset();
+        }
+        digitalWrite(LED_BUILTIN, i%2);
+        return;
+    }
+
+    i++;
+
     webServer.loop();
     settings.loop();
     dataCollector.loop();
@@ -52,22 +70,6 @@ void loop() {
     rs485.loop();
     heating.loop();
     balancer.loop();
-
-    if (wifi.isInAPMode()) {
-        if (millis() > 15 * 1000) {
-            ESP.reset();
-        }
-        digitalWrite(LED_BUILTIN, i%30);
-    } else if (wifi.isConnected()) {
-        digitalWrite(LED_BUILTIN, i%10);
-    } else {
-        if (millis() > 15 * 1000) {
-            ESP.reset();
-        }
-        digitalWrite(LED_BUILTIN, i%2);
-    }
-
-    i++;
 
     delay(100);
 }

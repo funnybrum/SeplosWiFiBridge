@@ -1,9 +1,10 @@
 #include "Main.h"
 
 void Balancer::begin() {
-    this->mode = OFF;
-    this->thresholdVoltage = 3450;
+    this->mode = AUTO;
+    this->thresholdVoltage = 3440;
     this->thresholdVoltageDiff = 5;
+    this->thresholdCurrent = 10;
     this->isOn = false;
 }
 
@@ -27,12 +28,21 @@ void Balancer::loop() {
         lowestCellVoltage = min(lowestCellVoltage, int(battery.getCellVoltage(i)*1000));
     }
 
-    if (highestCellVoltage - lowestCellVoltage > this->thresholdVoltageDiff && highestCellVoltage > this->thresholdVoltage) {
-        digitalWrite(D5, HIGH);
-        this->isOn = true;
-    } else {
-        digitalWrite(D5, LOW);
-        this->isOn = false;
+    if (highestCellVoltage > this->thresholdVoltage &&
+        abs(battery.getCurrent()) < this->thresholdCurrent) {
+        
+        int vDiff = highestCellVoltage - lowestCellVoltage;
+        if (this->isOn) {
+            // Add 2mV as hysteresis.
+            vDiff += 2;
+        }
+        if (vDiff > this->thresholdVoltageDiff) {
+            digitalWrite(D5, HIGH);
+            this->isOn = true;
+        } else {
+            digitalWrite(D5, LOW);
+            this->isOn = false;
+        }
     }
 }
 
@@ -41,13 +51,18 @@ void Balancer::setMode(BalancerMode mode) {
 }
 
 void Balancer::setThresholdVoltage(int mV) {
-    logger.log("Setting AB threshold voltage diff to %d", mV);
+    logger.log("Setting AB threshold voltage to %d", mV);
     this->thresholdVoltage = mV;
 }
 
 void Balancer::setVoltageDifference(int mV) {
     logger.log("Setting AB threshold voltage to %d", mV);
     this->thresholdVoltageDiff = mV;
+}
+
+void Balancer::setThresholdCurrent(int a) {
+    logger.log("Setting AB threshold current to %dA", a);
+    this->thresholdCurrent = a;
 }
 
 bool Balancer::isBalancing() {
