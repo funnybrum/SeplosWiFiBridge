@@ -43,6 +43,9 @@ void Balancer::loop() {
             digitalWrite(D5, LOW);
             this->isOn = false;
         }
+    } else {
+        digitalWrite(D5, LOW);
+        this->isOn = false;
     }
 }
 
